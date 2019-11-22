@@ -10,31 +10,50 @@ import SwiftUI
 
 struct ContentView: View {
     @State var inputType = 0
+    @State var price: String = ""
+    @State var numberOfUsers: String = ""
+    var monthly = "$0.00"
+    var yearly = "$0.00"
+    var monthlyRevenue: Int = 0
+    var yearlyRevenue: Int = 0
+    
     var body: some View {
-        VStack(alignment: .leading) {
-            HStack {
-                Text("Am I Rich Yet?")
-                    .font(.title)
-                Spacer()
+        ScrollView {
+            VStack {
+                
+                HStack() {
+                    VStack() {
+                        Text("Total Revenue")
+                        HStack {
+                            if let intPrice = Int(price), let intUserCount = Int(numberOfUsers) {
+                                monthlyRevenue = intPrice * intUserCount
+                                yearlyRevenue = monthly * 12
+                            }
+                            monthly = "$\(monthlyRevenue)"
+                            yearly = "$\(yearlyRevenue)"
+                            
+                            RevenueView(title: "Monthly", amount: monthly)
+                            RevenueView(title: "Yearly", amount: yearly)
+                        }
+                    }
+                }
+                
+                Picker(selection: $inputType, label: Text("Select how you make money")) {
+                    Text("Paid App").tag(0)
+                    Text("Subscription").tag(1)
+                    Text("In-app Purchase").tag(2)
+                }.pickerStyle(SegmentedPickerStyle())
+                
+                if inputType == 0 {
+                    PaidAppInputView(appPrice: "2.00", numberUsers: "1234")
+                } else if inputType == 1 {
+                    SubscriptionAppInputView(price: "5.00", numberOfUsers: "1234")
+                } else if inputType == 2 {
+                    InAppPurchaseInputView(averagePrice: "1.00", numberOfUsers: "1234")
+                }
             }
-            Text("Total Revnue")
-            
-            Picker(selection: $inputType, label: Text("Select how you make money")) {
-                Text("Paid App").tag(0)
-                Text("Subscription").tag(1)
-                Text("In-app Purchase").tag(2)
-            }.pickerStyle(SegmentedPickerStyle())
-            
-            Spacer()
-            if inputType == 0 {
-                Text("Paid App Model")
-            } else if inputType == 1 {
-                Text("Subscription Model")
-            } else if inputType == 2 {
-                Text("In-app Purchase Model")
-            }
-            Spacer()
-        } .padding()
+            .padding()
+        }
     }
 }
 
